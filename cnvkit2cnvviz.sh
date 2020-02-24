@@ -22,8 +22,7 @@ bedtools intersect -b "${basename}.bed" -a ${VARDICT_VCF} | \
 sed -E -i 's/^chr([0-920-22XY]\s+.*)/\1/' ${basename}.bed
 sed -E -i 's/^chr([0-920-22XY]\s+.*)/\1/' ${basename}.middle.txt
 
-/Users/welshm3/wgs/cwl-env/bin/python /Users/welshm3/wgs/cancer-whole-genome/tools/make_panels.py
-#python /usr/bin/make_panels.py \
+python /usr/local/bin/make_panels.py \
     --num_cores ${NUM_CORES} \
     --top_panel ${basename}.bed \
     --mid_panel ${basename}.middle.txt \
