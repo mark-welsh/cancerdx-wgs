@@ -28,7 +28,6 @@ header.add_info_line(af_info)
 
 output_vcf = vcfpy.Writer.from_path(output_vcf_name, header)
 for record in strelka2_vcf:
-    print(record)
     alt = record.ALT[0].serialize()
     ref = record.REF
     tumor = record.call_for_sample[tumor_sample].data
