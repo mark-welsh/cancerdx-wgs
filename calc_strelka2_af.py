@@ -62,4 +62,4 @@ for record in strelka2_vcf:
         output_vcf.write_record(record)
     except UnicodeError:
         print('FAILED FOR {}'.format(record))
-        continue
+        next
