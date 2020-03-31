@@ -60,6 +60,6 @@ for record in strelka2_vcf:
         record.call_for_sample[tumor_sample].data.setdefault('AF', [af])
         record.call_for_sample[normal_sample].data.setdefault('AF', [normal_af])
         output_vcf.write_record(record)
-    except UnicodeDecodeError:
+    except UnicodeError:
         print('FAILED FOR {}'.format(record))
         continue
