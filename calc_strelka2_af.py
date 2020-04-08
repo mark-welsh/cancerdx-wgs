@@ -8,6 +8,13 @@ tumor_sample = sys.argv[2]
 normal_sample = sys.argv[3]
 output_vcf_name = sys.argv[4]
 
+ad_format = OrderedDict({
+    'ID': 'AD',
+    'Number': 'R',
+    'Type': 'Integer',
+    'Description': 'Allelic depths for the ref and alt alleles in the order listed'
+})
+
 af_format = OrderedDict({
     'ID': 'AF',
     'Number': 'A',
@@ -23,6 +30,7 @@ af_info = OrderedDict({
 })
 
 header = strelka2_vcf.header
+header.add_format_line(ad_format)
 header.add_format_line(af_format)
 header.add_info_line(af_info)
 
@@ -45,17 +53,24 @@ for record in strelka2_vcf:
         tier1_alt_counts = float(tumor['TIR'][0])
         normal_ref_counts = float(normal['TAR'][0])
         normal_alt_counts = float(normal['TIR'][0])
+    ad = '{},{}'.format(tier1_ref_counts, tier1_alt_counts)
     af = float(tier1_alt_counts/(tier1_alt_counts + tier1_ref_counts))
     try:
+        normal_ad = [int(normal_ref_counts), int(normal_alt_counts)]
         normal_af = float(normal_alt_counts/(normal_alt_counts + normal_ref_counts))
     except ZeroDivisionError:
+        normal_ad = [0, 0]
         normal_af = 0.0
    
     # NOTE: "override" the vcfpy.Record.add_format() method, it doesn't work
     #       the way I want it to, so I do it myself
     # https://github.com/bihealth/vcfpy/blob/v0.12.0/vcfpy/record.py#L142-L154
+    record.FORMAT.append('AD')
+    record.call_for_sample[tumor_sample].data.setdefault('AD', ad)
+    record.call_for_sample[normal_sample].data.setdefault('AD', normal_ad)
     record.FORMAT.append('AF')
     record.call_for_sample[tumor_sample].data.setdefault('AF', [af])
     record.call_for_sample[normal_sample].data.setdefault('AF', [normal_af])
+    
     output_vcf.write_record(record)
 
