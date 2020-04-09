@@ -53,8 +53,12 @@ for record in strelka2_vcf:
         tier1_alt_counts = float(tumor['TIR'][0])
         normal_ref_counts = float(normal['TAR'][0])
         normal_alt_counts = float(normal['TIR'][0])
-    ad = '{},{}'.format(tier1_ref_counts, tier1_alt_counts)
-    af = float(tier1_alt_counts/(tier1_alt_counts + tier1_ref_counts))
+
+    ad = [int(tier1_ref_counts), int(tier1_alt_counts)]
+    try:
+        af = float(tier1_alt_counts/(tier1_alt_counts + tier1_ref_counts))
+    except ZeroDivisionError:
+        af = 0.0
     try:
         normal_ad = [int(normal_ref_counts), int(normal_alt_counts)]
         normal_af = float(normal_alt_counts/(normal_alt_counts + normal_ref_counts))
