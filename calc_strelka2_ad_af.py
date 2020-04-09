@@ -30,11 +30,15 @@ af_info = OrderedDict({
 })
 
 header = strelka2_vcf.header
-header.add_format_line(ad_format)
-header.add_format_line(af_format)
-header.add_info_line(af_info)
+# NOTE: for some reason Strelka2 comes with an AF
+#       tag in the INFO field even though no AF tag is present
+#       so it's removed here and replaced by the cancerdx one
+new_header = vcfpy.header_without_lines(header, [('INFO', 'AF')])
+new_header.add_format_line(ad_format)
+new_header.add_format_line(af_format)
+new_header.add_info_line(af_info)
 
-output_vcf = vcfpy.Writer.from_path(output_vcf_name, header)
+output_vcf = vcfpy.Writer.from_path(output_vcf_name, new_header)
 for record in strelka2_vcf:
     alt = record.ALT[0].serialize()
     ref = record.REF
@@ -59,11 +63,11 @@ for record in strelka2_vcf:
         af = float(tier1_alt_counts/(tier1_alt_counts + tier1_ref_counts))
     except ZeroDivisionError:
         af = 0.0
+    
+    normal_ad = [int(normal_ref_counts), int(normal_alt_counts)]
     try:
-        normal_ad = [int(normal_ref_counts), int(normal_alt_counts)]
         normal_af = float(normal_alt_counts/(normal_alt_counts + normal_ref_counts))
     except ZeroDivisionError:
-        normal_ad = [0, 0]
         normal_af = 0.0
    
     # NOTE: "override" the vcfpy.Record.add_format() method, it doesn't work
@@ -72,6 +76,7 @@ for record in strelka2_vcf:
     record.FORMAT.append('AD')
     record.call_for_sample[tumor_sample].data.setdefault('AD', ad)
     record.call_for_sample[normal_sample].data.setdefault('AD', normal_ad)
+    
     record.FORMAT.append('AF')
     record.call_for_sample[tumor_sample].data.setdefault('AF', [af])
     record.call_for_sample[normal_sample].data.setdefault('AF', [normal_af])
