@@ -22,6 +22,13 @@ af_format = OrderedDict({
     'Description': 'Allele fractions of alternate alleles in the tumor (cancerdx calc)'
 })
 
+gt_format = OrderedDict({
+    'ID': 'GT',
+    'Number': '1',
+    'Type': 'String',
+    'Description': 'Genotype (cancerdx default for QCI)'
+})
+
 af_info = OrderedDict({
     'ID': 'AF',
     'Number': 'A',
@@ -31,11 +38,12 @@ af_info = OrderedDict({
 
 header = strelka2_vcf.header
 # NOTE: for some reason Strelka2 comes with an AF
-#       tag in the INFO field even though no AF tag is present
-#       so it's removed here and replaced by the cancerdx one
+#       tag in the INFO field even though no AF tag is present.
+#       it's removed here and replaced by the cancerdx one
 new_header = vcfpy.header_without_lines(header, [('INFO', 'AF')])
 new_header.add_format_line(ad_format)
 new_header.add_format_line(af_format)
+new_header.add_format_line(gt_format)
 new_header.add_info_line(af_info)
 
 output_vcf = vcfpy.Writer.from_path(output_vcf_name, new_header)
@@ -81,5 +89,12 @@ for record in strelka2_vcf:
     record.call_for_sample[tumor_sample].data.setdefault('AF', [af])
     record.call_for_sample[normal_sample].data.setdefault('AF', [normal_af])
     
+    # NOTE: Qiagen Clinical Insight (QCI) platform requires VCF v4.2, which requires
+    #       a GT tag if 'FORMAT' is used. Since the actual genotype is not
+    #       evaluated by QCI, default genotypes are assigned here
+    record.FORMAT.append('GT')
+    record.call_for_sample[tumor_sample].data.setdefault('GT', '0/1')
+    record.call_for_sample[normal_sample].data.setdefault('GT', '0/0')
+
     output_vcf.write_record(record)
 
