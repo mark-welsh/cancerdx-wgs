@@ -28,8 +28,8 @@ python /usr/local/bin/make_panels.py \
     --mid_panel ${basename}.middle.txt \
     --sample_id ${basename}
 
-sed -E -i '1i\#top' ${basename}.panels.txt
-sed -E -i '1i\#middle' ${basename}.middle.panels.txt
+sed -E -i '1s/.*/#top/' ${basename}.panels.txt
+sed -E -i '1s/.*/#middle/' ${basename}.middle.panels.txt
 cat ${basename}.middle.panels.txt >> ${basename}.panels.txt
 
 rm -f ${basename}.txt ${basename}.bed ${basename}.top.txt ${basename}.middle.txt ${basename}.middle.panels.txt
