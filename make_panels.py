@@ -54,6 +54,7 @@ def main():
     parser.add_argument("--top_panel", dest="top_panel", required=True)
     parser.add_argument("--mid_panel", dest="mid_panel", required=True)
     parser.add_argument("--sample_id", dest="sample_id", required=True)
+    parser.add_argument("--sample_snps", dest="sample_snps", type=int, default=6000)
     args = parser.parse_args()
 
     top_df = pd.read_csv(args.top_panel, sep='\t', header=0, names=["chrom", "start", "stop", "log2ratio", "type", "gene", "arm", "transcript"], dtype=col_dtypes)
@@ -86,7 +87,7 @@ def main():
     final_mid_df = new_mid_df[["cnv_number", "vaf", "pos", "gene", "category", "chrom"]]
     final_mid_df.dropna(inplace=True)
 
-    sample_n = int(round(len(final_mid_df)/3000))
+    sample_n = int(round(len(final_mid_df)/args.sample_snps))
     print('Sampling every {} SNP...'.format(sample_n))
     final_mid_df = final_mid_df.iloc[::sample_n, :]
 
