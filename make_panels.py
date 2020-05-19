@@ -24,6 +24,7 @@ def snp_map(dfs):
     chrm_mid_df["cnv_number"], chrm_mid_df["gene"], chrm_mid_df["category"] = zip(*chrm_mid_df.apply(lambda mid_row: get_snp_info(chrm_top_data, mid_row["pos"]), axis=1))
     return chrm_mid_df
 
+
 def calc_color(ratio):
     if ratio > 0.4:
         color = "gain"
@@ -85,15 +86,12 @@ def main():
     final_mid_df = new_mid_df[["cnv_number", "vaf", "pos", "gene", "category", "chrom"]]
     final_mid_df.dropna(inplace=True)
 
-    #final_bot_df = final_mid_df.sample(n = 2000)
-    #final_bot_df.sort_values(by=["cnv_number"], inplace=True)
+    sample_n = int(round(len(final_mid_df)/3000))
+    print('Sampling every {} SNP...'.format(sample_n))
+    final_mid_df = final_mid_df.iloc[::sample_n, :]
 
     final_top_df.to_csv(args.sample_id + '.panels.txt', sep='\t', index=False)
     final_mid_df.to_csv(args.sample_id + '.middle.panels.txt', sep='\t', index=False)
-    #final_bot_df.to_csv('bot.csv', sep='\t', index=False)
-
-    vlines_str = ','.join([str(line) for line in vertical_lines])
-    print(vlines_str) #because I don't want the last comma
 
 
 if __name__ == '__main__':
