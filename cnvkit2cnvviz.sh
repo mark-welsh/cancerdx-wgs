@@ -3,6 +3,7 @@
 CNR_FILE="$1"
 B_ALLELE_VCF="$2"
 NUM_CORES="$3"
+SAMPLE_SNPS="${4}"
 
 cavatica_name="$(echo ${CNR_FILE} | awk -F'/' '{print $NF}' | cut -d'.' -f1 | cut -d'-' -f1)"
 tumor_name="$(echo ${CNR_FILE} | awk -F'/' '{print $NF}' | cut -d'.' -f1 | cut -d'-' -f2 | tr '_' '-')"
@@ -14,18 +15,19 @@ awk '{print $1"\t"$2"\t"$3"\t"$6"\t"".""\t"$4"\t""NA""\t""NA"}' "${CNR_FILE}" > 
 tail -n +2 ${basename}.txt > ${basename}.bed
 
 bedtools intersect -header -a ${B_ALLELE_VCF} -b "${basename}.bed" | \
-    bedtools intersect -header -a stdin -b /usr/local/bin/resources/b_allele.expanded.bed | \
-    bcftools norm -m -both | \
-    bcftools query -f '%CHROM\t%POS\t[%AF]\n' | sort -u >> ${basename}.middle.tsv
- 
-sed -E -i "" 's/^chr(.*)/\1/' ${basename}.bed
-sed -E -i "" 's/^chr(.*)/\1/' ${basename}.middle.tsv
+    bcftools query -f '%CHROM\t%POS\t[%AD]\n' | grep -E -v "\s0,0$" | \
+    grep -E -v "(\.|\d,\d,\d)" | tr "\t" "," | \
+    awk -F"," '{print $1"\t"$2"\t"$4/($3+$4)}' >> ${basename}.middle.tsv
+
+sed -E -i 's/^chr(.*)/\1/' ${basename}.bed
+sed -E -i 's/^chr(.*)/\1/' ${basename}.middle.tsv
 
 python /usr/local/bin/make_panels.py \
     --num_cores ${NUM_CORES} \
     --top_panel ${basename}.bed \
     --mid_panel ${basename}.middle.tsv \
-    --sample_id ${basename}
+    --sample_id ${basename} \
+    --sample_snps ${SAMPLE_SNPS}
 
 sed -E -i '1s/.*/#top/' ${basename}.panels.txt
 sed -E -i '1s/.*/#middle/' ${basename}.middle.panels.txt
