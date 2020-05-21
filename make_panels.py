@@ -87,9 +87,13 @@ def main():
     final_mid_df = new_mid_df[["cnv_number", "vaf", "pos", "gene", "category", "chrom"]]
     final_mid_df.dropna(inplace=True)
 
-    sample_n = int(round(len(final_mid_df)/args.sample_snps))
-    print('Sampling every {} SNP...'.format(sample_n))
-    final_mid_df = final_mid_df.iloc[::sample_n, :]
+    if args.sample_snps != 0:
+        sample_n = int(round(len(final_mid_df)/args.sample_snps))
+        print('Sampling every {} SNP...'.format(sample_n))
+        final_mid_df = final_mid_df.iloc[::sample_n, :]
+
+    final_top_df.loc[final_top_df['log2ratio'] > 3.0, 'log2ratio'] = 3.0
+    final_top_df.loc[final_top_df['log2ratio'] < -3.0, 'log2ratio'] = -3.0
 
     final_top_df.to_csv(args.sample_id + '.panels.txt', sep='\t', index=False)
     final_mid_df.to_csv(args.sample_id + '.middle.panels.txt', sep='\t', index=False)
