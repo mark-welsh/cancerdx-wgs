@@ -26,9 +26,9 @@ def snp_map(dfs):
 
 
 def calc_color(ratio):
-    if ratio > 0.4:
+    if ratio > 0.7:
         color = "gain"
-    elif ratio < -0.7:
+    elif ratio < -0.4:
         color = "loss"
     else:
         color = "normal"
