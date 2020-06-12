@@ -95,7 +95,7 @@ def main():
     # NOTE: CNVKit uses copy-number cutoff criteria that is different
     #       from DGD CNV analysis -- basically everything is +0.3 in
     #       CNVKit, so that is corrected here
-    #final_top_df = final_top_df['log2ratio'] - 0.3
+    final_top_df = final_top_df['log2ratio'] - 0.3
 
     final_top_df.loc[final_top_df['log2ratio'] > 3.0, 'log2ratio'] = 3.0
     final_top_df.loc[final_top_df['log2ratio'] < -3.0, 'log2ratio'] = -3.0
