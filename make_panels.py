@@ -84,6 +84,10 @@ def main():
     pool.close()
     pool.join()
 
+    # NOTE: removes antitarget regions
+    final_top_df = final_top_df[final_top_df["gene"] != '-']
+    final_mid_df = final_mid_df[final_mid_df["gene"] != '-']
+
     final_mid_df = new_mid_df[["cnv_number", "vaf", "pos", "gene", "category", "chrom"]]
     final_mid_df.dropna(inplace=True)
 
