@@ -64,6 +64,11 @@ def main():
     mid_df = pd.read_csv(args.mid_panel, sep='\t', header=0, names=[
                          "chrom", "pos", "vaf"], dtype=col_dtypes)
 
+    # NOTE: CNVKit uses copy-number cutoff criteria that is different
+    #       from DGD CNV analysis -- basically everything is +0.3 in
+    #       CNVKit, so that is corrected here (DGD limits in calc_color)
+    top_df['log2ratio'] = top_df['log2ratio'] - 0.3
+
     vertical_lines = [0]
     chrom_changes_mask = top_df["chrom"].ne(
         top_df["chrom"].shift().bfill()).astype(int)
@@ -104,11 +109,6 @@ def main():
         sample_n = int(round(len(final_mid_df)/args.sample_snps))
         print('Sampling every {} SNP...'.format(sample_n))
         final_mid_df = final_mid_df.iloc[::sample_n, :]
-
-    # NOTE: CNVKit uses copy-number cutoff criteria that is different
-    #       from DGD CNV analysis -- basically everything is +0.3 in
-    #       CNVKit, so that is corrected here
-    final_top_df['log2ratio'] = final_top_df['log2ratio'] - 0.3
 
     final_top_df.loc[final_top_df['log2ratio'] > 3.0, 'log2ratio'] = 3.0
     final_top_df.loc[final_top_df['log2ratio'] < -3.0, 'log2ratio'] = -3.0
