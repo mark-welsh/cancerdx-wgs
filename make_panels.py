@@ -69,9 +69,6 @@ def main():
     #       CNVKit, so that is corrected here (DGD limits in calc_color)
     top_df['log2ratio'] = top_df['log2ratio'] - 0.3
 
-    # NOTE: removes antitarget regions
-    top_df = top_df[top_df["gene"] != '-']
-
     print('Parallelizing limit calculation...')
     top_df_split = np.array_split(top_df, 10)
     pool = Pool(args.num_cores)

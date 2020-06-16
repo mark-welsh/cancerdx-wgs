@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail;
+
 CNR_FILE="$1"
 B_ALLELE_VCF="$2"
 NUM_CORES="$3"
@@ -12,7 +14,7 @@ normal_name="$(echo ${CNR_FILE} | awk -F'/' '{print $NF}' | cut -d'.' -f1 | cut 
 basename="$(echo ${cavatica_name}"_"${tumor_name}"_WGSRD_"${cavatica_name}"_"${normal_name}"_WGSRD")"
 
 awk '{print $1"\t"$2"\t"$3"\t"$6"\t"".""\t"$4"\t""NA""\t""NA"}' "${CNR_FILE}" > ${basename}.txt
-tail -n +2 ${basename}.txt > ${basename}.bed
+tail -n +2 ${basename}.txt | grep -P -v '\s-\s' > ${basename}.bed
 
 bedtools intersect -header -a ${B_ALLELE_VCF} -b "${basename}.bed" | \
     bcftools query -f '%CHROM\t%POS\t[%AD]\n' | grep -E -v "\s0,0$" | \
