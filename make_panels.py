@@ -27,9 +27,9 @@ def snp_map(dfs):
 
 
 def calc_color(ratio):
-    if ratio > 0.7:
+    if ratio > 0.4:
         color = "gain"
-    elif ratio < -0.4:
+    elif ratio < -0.7:
         color = "loss"
     else:
         color = "normal"
@@ -69,13 +69,8 @@ def main():
     #       CNVKit, so that is corrected here (DGD limits in calc_color)
     top_df['log2ratio'] = top_df['log2ratio'] - 0.3
 
-    vertical_lines = [0]
-    chrom_changes_mask = top_df["chrom"].ne(
-        top_df["chrom"].shift().bfill()).astype(int)
-    chrom_changes = chrom_changes_mask.where(
-        chrom_changes_mask == 1).dropna().index.values.tolist()
-    vertical_lines.extend(chrom_changes)
-    vertical_lines.append(len(top_df))
+    # NOTE: removes antitarget regions
+    top_df = top_df[top_df["gene"] != '-']
 
     print('Parallelizing limit calculation...')
     top_df_split = np.array_split(top_df, 10)
@@ -100,10 +95,6 @@ def main():
     final_mid_df = new_mid_df[["cnv_number",
                                "vaf", "pos", "gene", "category", "chrom"]]
     final_mid_df.dropna(inplace=True)
-
-    # NOTE: removes antitarget regions
-    final_top_df = final_top_df[final_top_df["gene"] != '-']
-    final_mid_df = final_mid_df[final_mid_df["gene"] != '-']
 
     if args.sample_snps != 0:
         sample_n = int(round(len(final_mid_df)/args.sample_snps))
