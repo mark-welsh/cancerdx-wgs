@@ -62,8 +62,6 @@ for i, line in enumerate(top_lines):
     color.append(c)
     text.append(gene)
 
-print(list(chr_labels))
-
 plot["cnv_data"].append({
     "x": x,
     "y": y,
@@ -143,6 +141,8 @@ chrm_ticks = list()
 for i, bp in enumerate(chrm_bp):
     if i == 0:
         chrm_ticks.append(int(bp/2))
+    elif i+1 == len(chrm_bp):
+        chrm_ticks.append(int((chrm_bp[-1]+bp)/2))
     else:
         chrm_ticks.append( int((bp - chrm_bp[i-1])/2) + chrm_bp[i-1])
     chrm_line = {
@@ -153,6 +153,7 @@ for i, bp in enumerate(chrm_bp):
     }
     plot["cnv_layout"]["shapes"].append(chrm_line)
     plot["baf_layout"]["shapes"].append(chrm_line)
+
 
 plot["cnv_layout"]["xaxis"]["tickvals"] = chrm_ticks
 plot["baf_layout"]["xaxis"]["tickvals"] = chrm_ticks
