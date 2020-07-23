@@ -31,8 +31,14 @@ python /usr/local/bin/make_panels.py \
     --sample_id ${basename} \
     --sample_snps ${SAMPLE_SNPS}
 
-sed -E -i '1s/.*/#top/' ${basename}.panels.txt
+sed -E -i '1s/.*/#top/' ${basename}.panels.txt && cp ${basename}.top.panels.txt
 sed -E -i '1s/.*/#middle/' ${basename}.middle.panels.txt
 cat ${basename}.middle.panels.txt >> ${basename}.panels.txt
+
+python /usr/local/bin/make_json.py \
+    --top_panel ${basename}.top.panels.txt \
+    --mid_panel ${basename}.middle.panels.txt \
+    --main_id ${tumor_name} \
+    --secondary_id ${normal_name}
 
 rm -f ${basename}.txt ${basename}.bed ${basename}.top.txt ${basename}.middle.tsv ${basename}.middle.panels.txt
