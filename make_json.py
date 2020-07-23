@@ -78,8 +78,10 @@ plot["cnv_data"].append({
 plot["cnv_layout"] = {
     "legend": {"orientation": 'h', "bordercolor": '#D3D3D3', "borderwidth": 1},
     "margin": {"l": 50, "r": 50, "b": 50, "t": 50},
-    "yaxis": {"range": [-3.0, 3.0], "zeroline": False, "title": 'log2ratio'},
-    "xaxis": {"range": [-100, plot["cnv_data"][0]["x"][-1]], "showline": False, "showgrid": False, "tickmode": "array",
+    "yaxis": {"range": [-3.25, 3.25], "zeroline": False, "title": 'log2ratio'},
+    "xaxis": {
+        "range": [max([int(plot["cnv_data"][0]["x"][-1]*-0.05), -100]), plot["cnv_data"][0]["x"][-1]],
+        "showline": False, "showgrid": False, "tickmode": "array",
         "ticktext": list(chr_labels), "showticklabels": True, "tickfont": {"size": 10}
     },
     "hovermode": 'closest',
@@ -130,7 +132,8 @@ plot["baf_data"].append({
 plot["baf_layout"] = {
     "yaxis": {"range": [-0.025, 1.025], "zeroline": False, "title": 'B-allele frequency'},
     "xaxis": {
-        "range": [-100, plot["cnv_data"][0]["x"][-1]], "showline": False, "showgrid": False, "tickmode": "array",
+        "range": [max([int(plot["cnv_data"][0]["x"][-1]*-0.05), -100]), plot["cnv_data"][0]["x"][-1]],
+        "showline": False, "showgrid": False, "tickmode": "array",
         "ticktext": list(chr_labels), "showticklabels": True, "tickfont": {"size": 10}
     },
     "hovermode": 'closest',
