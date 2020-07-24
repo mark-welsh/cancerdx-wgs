@@ -31,7 +31,7 @@ python /usr/local/bin/make_panels.py \
     --sample_id ${basename} \
     --sample_snps ${SAMPLE_SNPS}
 
-sed -E -i '1s/.*/#top/' ${basename}.panels.txt && cp ${basename}.top.panels.txt
+sed -E -i '1s/.*/#top/' ${basename}.panels.txt && cp ${basename}.panels.txt ${basename}.top.panels.txt
 sed -E -i '1s/.*/#middle/' ${basename}.middle.panels.txt
 cat ${basename}.middle.panels.txt >> ${basename}.panels.txt
 
