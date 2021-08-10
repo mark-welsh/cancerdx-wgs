@@ -43,11 +43,11 @@ with open(args.archer_list, 'r') as archer_in:
 
 # test if VCF is gzipped then deal with it accordingly
 if is_gz_file(args.vcf_file):
-	with gzip.open(args.vcf_file,'r') as gzip_vcf_in:
-    	vcf_lines = gzip_vcf_in.readlines()
+    with gzip.open(args.vcf_file,'r') as gzip_vcf_in:
+        vcf_lines = gzip_vcf_in.readlines()
 else:
-	with open(args.vcf_file, 'r') as vcf_in:
-    	vcf_lines = vcf_in.readlines()
+    with open(args.vcf_file, 'r') as vcf_in:
+        vcf_lines = vcf_in.readlines()
 
 vcf = process_sv_vcf([x.strip().split('\t') for x in vcf_lines])
 with open('{}.sv_reformated.vcf'.format(args.sample_id), 'w') as fout:
